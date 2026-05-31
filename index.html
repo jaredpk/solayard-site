@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SolaYard</title>
+<meta name="description" content="Something is taking root.">
+<link rel="icon" href="300x300.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Source+Sans+3:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1A243D;
+    --ink: #11192B;
+    --gold: #D4A017;
+    --gold-l: #E3B23C;
+    --off: #F7F6F2;
+    --slate: #6B7280;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--navy);
+    color: #fff;
+    font-family: 'Source Sans 3', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* Atmospheric background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(212,160,23,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 80% 90%, rgba(26,36,61,0.9) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Subtle grain texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stage {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+  }
+
+  /* Logo mark */
+  .mark {
+    width: 80px;
+    height: 80px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+  }
+
+  /* Wordmark */
+  .wordmark {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(38px, 8vw, 64px);
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    line-height: 1;
+    margin-top: 22px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+    text-shadow: 0 0 40px rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .wordmark .y {
+    color: var(--gold-l);
+    text-shadow: 0 0 40px rgba(227,178,60,0.4), 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  /* Divider line */
+  .rule {
+    width: 1px;
+    height: 0;
+    background: linear-gradient(to bottom, transparent, rgba(212,160,23,0.5), transparent);
+    margin: 36px auto;
+    animation: growLine 1s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+  }
+
+  /* Tagline */
+  .tagline {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: clamp(14px, 3vw, 18px);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 1.0s forwards;
+  }
+
+  /* Statement line */
+  .statement {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: clamp(22px, 5vw, 36px);
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    margin-top: 12px;
+    line-height: 1.2;
+    max-width: 540px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 1.1s forwards;
+    text-shadow: 0 0 40px rgba(255,255,255,0.2), 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .statement em {
+    font-style: normal;
+    color: var(--gold-l);
+    text-shadow: 0 0 40px rgba(227,178,60,0.4), 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  /* Email form */
+  .form-wrap {
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 1.3s forwards;
+  }
+
+  .form-row {
+    display: flex;
+    width: 100%;
+    border: 1px solid rgba(212,160,23,0.35);
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(8px);
+    transition: border-color 0.2s;
+  }
+
+  .form-row:focus-within {
+    border-color: rgba(212,160,23,0.7);
+  }
+
+  .form-row input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 14px 18px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 14px;
+    color: #fff;
+    min-width: 0;
+  }
+
+  .form-row input::placeholder {
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.04em;
+  }
+
+  .form-row button {
+    background: var(--gold-l);
+    border: none;
+    color: var(--ink);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .form-row button:hover {
+    background: var(--gold);
+  }
+
+  .form-hint {
+    font-size: 11px;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: 0.06em;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+  }
+
+  /* Success state */
+  .success {
+    display: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-l);
+    margin-top: 4px;
+  }
+
+  /* Year badge */
+  .year {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.18);
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 1.6s forwards;
+    white-space: nowrap;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes growLine {
+    from { height: 0; }
+    to   { height: 48px; }
+  }
+
+  /* Mobile */
+  @media (max-height: 600px) {
+    .mark { width: 56px; height: 56px; }
+    .rule { margin: 24px auto; }
+    .form-wrap { margin-top: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <img class="mark" src="300x300.png" alt="SolaYard">
+
+  <div class="wordmark">Sola<span class="y">Yard</span></div>
+
+  <div class="rule"></div>
+
+  <div class="tagline">Something is taking root</div>
+  <div class="statement">Your yard is about to <em>change.</em></div>
+
+  <div class="form-wrap">
+    <div class="form-row">
+      <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+      <button onclick="handleSubmit()">Be First</button>
+    </div>
+    <div class="form-hint" id="hint">No rooftop. No commitment. More soon.</div>
+    <div class="success" id="success">You're on the list. More soon. ✦</div>
+  </div>
+
+</div>
+
+<div class="year">© 2026 &nbsp;·&nbsp; SolaYard &nbsp;·&nbsp; A brand of Elevrics, LLC</div>
+
+<script>
+  async function handleSubmit() {
+    const email = document.getElementById('email').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('email').focus();
+      return;
+    }
+    const btn = document.querySelector('.form-row button');
+    btn.textContent = '...';
+    btn.disabled = true;
+    try {
+      const res = await fetch('https://formspree.io/f/mvzyjopr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      if (res.ok) {
+        document.getElementById('hint').style.display = 'none';
+        document.getElementById('email').parentElement.style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+      } else {
+        btn.textContent = 'Be First';
+        btn.disabled = false;
+        document.getElementById('hint').textContent = 'Something went wrong. Try again.';
+      }
+    } catch {
+      btn.textContent = 'Be First';
+      btn.disabled = false;
+      document.getElementById('hint').textContent = 'Something went wrong. Try again.';
+    }
+  }
+
+  document.getElementById('email').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleSubmit();
+  });
+</script>
+
+</body>
+</html>
