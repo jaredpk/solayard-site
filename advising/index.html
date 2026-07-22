@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>SolaYard — Advising &amp; Resourcing Tracker (Internal)</title>
+<link rel="icon" href="../300x300.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#1A243D; --ink:#11192B; --gold:#D4A017; --gold-l:#E3B23C;
+    --white:#FFFFFF; --slate:#6B7280; --off:#F7F6F2; --hair:#E4E1DA;
+    --display:'Montserrat',sans-serif; --body:'Source Sans 3',sans-serif;
+    /* status accents */
+    --s-contact:#2563EB; --s-disc:#D4A017; --s-signed:#2E7D46; --s-passed:#9AA1AE;
+  }
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);background:var(--off);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:100;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:60px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .nav-logo{display:flex;align-items:center;gap:11px}
+  .nav-logo .wm{font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:17px;color:#fff}
+  .nav-logo .wm .y{color:var(--gold-l)}
+  .nav-logo .crumb{font-family:var(--display);font-weight:600;font-size:12px;letter-spacing:.04em;color:#8990a0;text-transform:uppercase;padding-left:12px;margin-left:4px;border-left:1px solid rgba(255,255,255,.14)}
+  .conf{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-l);background:rgba(227,178,60,.12);border:1px solid rgba(227,178,60,.4);padding:6px 12px;border-radius:100px}
+  .conf .dot{width:6px;height:6px;border-radius:50%;background:var(--gold-l)}
+
+  /* HEADER */
+  .head{max-width:1240px;margin:0 auto;padding:38px 32px 8px}
+  .head .label{font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .head h1{font-family:var(--display);font-size:30px;font-weight:700;color:var(--navy);letter-spacing:-.02em}
+  .head p{font-size:15px;color:var(--slate);margin-top:8px;max-width:760px}
+  .head .meta{margin-top:12px;font-size:12.5px;color:var(--slate);display:flex;gap:18px;flex-wrap:wrap}
+  .head .meta b{color:var(--navy);font-weight:600}
+
+  /* STAT ROW */
+  .stats{max-width:1240px;margin:22px auto 0;padding:0 32px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  .stat{background:#fff;border:1px solid var(--hair);border-radius:12px;padding:16px 18px}
+  .stat .n{font-family:var(--display);font-size:26px;font-weight:800;color:var(--navy);letter-spacing:-.02em;line-height:1}
+  .stat .k{font-size:11.5px;color:var(--slate);margin-top:7px;font-weight:500;letter-spacing:.02em}
+  .stat .sub{font-size:11px;color:var(--slate);margin-top:3px;opacity:.85}
+  .stat .bar{cursor:pointer;position:relative}
+  .stat.c-contact{border-top:3px solid var(--s-contact)}
+  .stat.c-disc{border-top:3px solid var(--s-disc)}
+  .stat.c-signed{border-top:3px solid var(--s-signed)}
+  .stat.c-passed{border-top:3px solid var(--s-passed)}
+
+  /* CONTROLS */
+  .controls{max-width:1240px;margin:26px auto 0;padding:0 32px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .seg{display:flex;background:#fff;border:1px solid var(--hair);border-radius:9px;padding:3px;gap:2px}
+  .seg button{font-family:var(--display);font-weight:600;font-size:12.5px;color:var(--slate);background:none;border:none;padding:7px 13px;border-radius:6px;cursor:pointer;transition:.15s;white-space:nowrap}
+  .seg button.on{background:var(--navy);color:#fff}
+  .seg button:not(.on):hover{color:var(--navy)}
+  .search{flex:1;min-width:180px;max-width:280px;position:relative}
+  .search input{width:100%;font-family:var(--body);font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--hair);border-radius:9px;padding:9px 13px 9px 34px;outline:none;transition:.15s}
+  .search input:focus{border-color:var(--gold)}
+  .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.4}
+  .reset{font-family:var(--display);font-weight:600;font-size:12px;color:var(--slate);background:none;border:none;cursor:pointer;padding:6px 4px}
+  .reset:hover{color:var(--navy)}
+
+  /* BOARD */
+  .wrap{max-width:1240px;margin:22px auto 60px;padding:0 32px}
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:start}
+  .col{background:rgba(26,36,61,.03);border:1px solid var(--hair);border-radius:14px;padding:12px;min-height:120px}
+  .col-head{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 12px}
+  .col-head .t{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:13px;color:var(--navy);letter-spacing:.01em}
+  .col-head .cnt{font-family:var(--display);font-weight:700;font-size:12px;color:var(--slate);background:#fff;border:1px solid var(--hair);border-radius:100px;padding:2px 9px;min-width:24px;text-align:center}
+  .swatch{width:9px;height:9px;border-radius:50%}
+  .col.contact .swatch{background:var(--s-contact)} .col.disc .swatch{background:var(--s-disc)}
+  .col.signed .swatch{background:var(--s-signed)} .col.passed .swatch{background:var(--s-passed)}
+
+  /* CARD */
+  .card{background:#fff;border:1px solid var(--hair);border-radius:11px;padding:14px;margin-bottom:10px;cursor:pointer;transition:box-shadow .15s,transform .15s,border-color .15s}
+  .card:hover{box-shadow:0 8px 22px rgba(26,36,61,.10);transform:translateY(-1px);border-color:#d7d3ca}
+  .card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .card .name{font-family:var(--display);font-weight:700;font-size:14.5px;color:var(--navy);letter-spacing:-.01em;line-height:1.25}
+  .card .org{font-size:12.5px;color:var(--slate);margin-top:2px}
+  .card .role{font-size:12.5px;color:var(--ink);margin-top:9px;line-height:1.5}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
+  .chip{font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:5px;border:1px solid var(--hair);color:var(--slate);background:var(--off)}
+  .chip.cat{color:var(--navy);border-color:#d7d3ca}
+  .chip.eq{color:#A07A0C;background:rgba(212,160,23,.10);border-color:rgba(212,160,23,.3)}
+  .chip.geo{color:#436;background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.22)}
+  .chip.gate{color:#7a5c00;background:rgba(212,160,23,.14);border-color:rgba(212,160,23,.4)}
+  .chip.pri{color:#fff;background:var(--gold);border-color:var(--gold)}
+  .card .next{font-size:12px;color:var(--slate);margin-top:11px;padding-top:10px;border-top:1px dashed var(--hair);display:flex;gap:7px}
+  .card .next b{color:var(--navy);font-weight:600}
+  .card .next .arrow{color:var(--gold);font-weight:700;flex-shrink:0}
+  .col.passed .card{opacity:.72}
+  .col.passed .card .name{text-decoration:line-through;text-decoration-color:var(--hair)}
+  .empty{font-size:12px;color:var(--slate);text-align:center;padding:20px 8px;opacity:.7;font-style:italic}
+
+  /* GROUPED (category view) */
+  .group{margin-bottom:30px}
+  .group-head{display:flex;align-items:baseline;gap:12px;margin:0 2px 14px;padding-bottom:10px;border-bottom:1px solid var(--hair)}
+  .group-head h2{font-family:var(--display);font-size:17px;font-weight:700;color:var(--navy)}
+  .group-head .g-cnt{font-size:12.5px;color:var(--slate)}
+  .group-head .g-desc{font-size:12.5px;color:var(--slate);margin-left:auto;max-width:420px;text-align:right}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .grid .card{margin-bottom:0}
+  .grid .card .status-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:100px}
+  .st-contact{color:var(--s-contact);background:rgba(37,99,235,.10)} .st-disc{color:#8a6d00;background:rgba(212,160,23,.14)}
+  .st-signed{color:var(--s-signed);background:rgba(46,125,70,.12)} .st-passed{color:var(--s-passed);background:rgba(154,161,174,.16)}
+
+  /* MODAL */
+  .ov{position:fixed;inset:0;background:rgba(17,25,43,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:200;padding:24px}
+  .ov.on{display:flex}
+  .modal{background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 30px 80px rgba(17,25,43,.4)}
+  .modal .m-head{padding:24px 26px 18px;border-bottom:1px solid var(--hair)}
+  .modal .m-head .name{font-family:var(--display);font-weight:800;font-size:22px;color:var(--navy);letter-spacing:-.02em}
+  .modal .m-head .org{font-size:14px;color:var(--slate);margin-top:3px}
+  .modal .m-body{padding:20px 26px 26px}
+  .mrow{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid var(--hair);font-size:13.5px}
+  .mrow:last-child{border-bottom:none}
+  .mrow .k{font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate);min-width:120px;flex-shrink:0;padding-top:2px}
+  .mrow .v{color:var(--ink);line-height:1.55}
+  .mclose{position:absolute;top:0;right:0}
+  .m-x{background:none;border:none;font-size:22px;color:var(--slate);cursor:pointer;padding:8px 12px;line-height:1}
+  .m-x:hover{color:var(--navy)}
+
+  footer{max-width:1240px;margin:0 auto;padding:26px 32px 50px;border-top:1px solid var(--hair);font-size:12px;color:var(--slate);line-height:1.7}
+  footer b{color:var(--navy)}
+  .warn{color:#8a6d00}
+
+  @media(max-width:1080px){ .board{grid-template-columns:repeat(2,1fr)} .stats{grid-template-columns:repeat(3,1fr)} }
+  @media(max-width:680px){
+    nav{padding:0 18px} .nav-logo .crumb{display:none}
+    .head,.stats,.controls,.wrap,footer{padding-left:18px;padding-right:18px}
+    .board{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)}
+    .group-head .g-desc{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     HOW TO MAINTAIN THIS TRACKER
+     Everything renders from the ROSTER array below. To update someone:
+       • Move them between columns → change  status:  to one of
+         "contact"  (still need to contact)
+         "disc"     (currently in discussions)
+         "signed"   (signed on / engaged)
+         "passed"   (passed / declined / dead)
+       • Update the next step → edit  next:
+       • Add context → edit  notes:
+     Counts, equity totals, and the board all recompute automatically.
+     Roster synthesized from "SolaYard 12–24 Month Resourcing & Advising
+     Plan" (Jul 22 2026). Figures marked ⚖ need counsel; re-verify at first
+     contact.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<nav>
+  <div class="nav-logo">
+    <svg width="24" height="22" viewBox="10 0 100 92" xmlns="http://www.w3.org/2000/svg"><polygon points="30.0,80.0 88.0,69.0 102.0,22.0 44.0,33.0" fill="none" stroke="#E3B23C" stroke-width="4.6" stroke-linejoin="round"/><g fill="none" stroke="#E3B23C" stroke-width="2.4" stroke-linecap="round"><line x1="44.5" y1="77.2" x2="58.5" y2="30.2"/><line x1="59.0" y1="74.5" x2="73.0" y2="27.5"/><line x1="73.5" y1="71.8" x2="87.5" y2="24.8"/><line x1="33.5" y1="68.2" x2="91.5" y2="57.2"/><line x1="37.0" y1="56.5" x2="95.0" y2="45.5"/><line x1="40.5" y1="44.8" x2="98.5" y2="33.8"/></g><line x1="68" y1="70.5" x2="68" y2="86" stroke="#E3B23C" stroke-width="4.2" stroke-linecap="round"/><polygon points="37.0,5.6 38.8,17.9 45.8,10.3 41.8,19.8 49.1,18.5 43.3,23.1 58.2,27.0 42.8,26.7 47.0,32.7 40.5,29.4 41.6,39.7 37.0,30.4 31.8,41.6 33.5,29.4 24.7,34.7 31.2,26.7 23.9,25.9 30.7,23.1 17.5,15.1 32.2,19.8 29.8,12.8 35.2,17.9" fill="#E3B23C"/><circle cx="37" cy="24" r="3.6" fill="#FFFFFF"/></svg>
+    <span class="wm">Sola<span class="y">Yard</span></span>
+    <span class="crumb">Advising &amp; Resourcing</span>
+  </div>
+  <div class="conf"><span class="dot"></span>Internal · Confidential</div>
+</nav>
+
+<div class="head">
+  <div class="label">12–24 Month Resourcing Plan</div>
+  <h1>Advisor &amp; Resource Pipeline</h1>
+  <p>Every person, institution, and role from the resourcing plan — tracked from first contact through sign-on. Click any card for full detail, terms, and sourcing channels.</p>
+  <div class="meta">
+    <span>Source: <b>SolaYard 12–24mo Resourcing &amp; Advising Plan</b></span>
+    <span>As of <b>Jul 22, 2026</b></span>
+    <span>Advisor equity pool cap: <b>≤ 3%</b> <span class="warn">⚖</span></span>
+  </div>
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="controls">
+  <div class="seg" id="viewSeg">
+    <button data-view="board" class="on">Board</button>
+    <button data-view="category">By Category</button>
+  </div>
+  <div class="seg" id="catSeg">
+    <button data-cat="all" class="on">All</button>
+    <button data-cat="Named Contact">Contacts</button>
+    <button data-cat="Institutional">Institutional</button>
+    <button data-cat="Technical Advisor">Technical</button>
+    <button data-cat="Design Partner">Design Partners</button>
+  </div>
+  <div class="search">
+    <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="#6B7280" stroke-width="2"/><line x1="14" y1="14" x2="18" y2="18" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="q" type="text" placeholder="Search name, org, role…">
+  </div>
+  <button class="reset" id="reset">Reset</button>
+</div>
+
+<div class="wrap" id="wrap"></div>
+
+<footer>
+  <p><b>Internal working tracker.</b> Roster synthesized from the SolaYard 12–24 Month Resourcing &amp; Advising Plan (documents 09a–09f, Jun–Jul 2026). Contacts, program fees, equity figures, and legal interpretations are drawn from those source documents and should be re-verified at first contact.</p>
+  <p style="margin-top:8px"><span class="warn">⚖</span> Items involving equity, securities (Ch. 517 / Reg D), or entity structure require attorney review before action. Nothing here is legal, tax, or investment advice.</p>
+  <p style="margin-top:8px">SolaYard&trade; is a brand of Elevrics, LLC. Not for external distribution.</p>
+</footer>
+
+<div class="ov" id="ov"><div class="modal" style="position:relative"><span class="mclose"><button class="m-x" id="mx">×</button></span><div id="mcontent"></div></div></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   ROSTER — the single source of truth. Edit this array to update status.
+   status: "contact" | "disc" | "signed" | "passed"
+   ═══════════════════════════════════════════════════════════════════ */
+const ROSTER = [
+  /* ── NAMED CONTACTS (individuals to reach) ───────────────────────── */
+  { name:"Chase Anderson", org:"USU OPDD — capstone gateway", cat:"Named Contact",
+    status:"contact", priority:true, geo:"Utah", equity:"—", ws:"WS1 · 09f",
+    role:"Door to the USU OPDD senior-design capstone (the primary low-cost engineering engine) and to OPDD industrial/outdoor-product design faculty.",
+    next:"Email Template A this week — confirm cost fits the $2–3K envelope, best-fit faculty, and Fall 2026 feasibility.",
+    notes:"#1 move in every playbook — clock-sensitive to the fall academic calendar. Also the surfacing path for the OPDD design advisor. Ask about an Innovation Campus spin-in as follow-on." },
+
+  { name:"Krywko", org:"UF IPPD — coordinator", cat:"Named Contact",
+    status:"contact", geo:"Florida", equity:"—", ws:"WS1 · 09f",
+    role:"Coordinator for UF's Integrated Product & Process Design ($15K sponsored capstone tier).",
+    next:"Email for window / lead-time info only — no commitment (IPPD is Gate-C-gated).",
+    notes:"IPPD $15K activates only after the SBA loan or SBIR award closes. Info-gathering now so the 2027–28 cycle can be triggered fast on Gate C." },
+
+  { name:"Latorre-Navarro", org:"UF IPPD — coordinator", cat:"Named Contact",
+    status:"contact", geo:"Florida", equity:"—", ws:"WS1 · 09f",
+    role:"Co-coordinator for UF IPPD; second contact for window/lead-time confirmation.",
+    next:"Email for window / lead-time info only — paired with Krywko outreach.",
+    notes:"Same track as Krywko — information only until Gate C." },
+
+  { name:"Lisa Rain", org:"Cenfluence — Energy + Env. Sciences cluster manager", cat:"Named Contact",
+    status:"contact", geo:"Florida (Central)", equity:"Free", ws:"WS3 · 09f",
+    role:"Zero-cost surrogate BD team: tailored B2B partner searches, non-dilutive funding ID, R&D matchmaking in Central FL.",
+    next:"Submit the free Cenfluence profile application (Days 1–14), then request one tailored partner search per quarter.",
+    notes:"Use to backfill hospitality/retail design-partner gaps and to identify non-dilutive funding." },
+
+  { name:"Robert Monaco", org:"FloridaMakes — Gulf Coast", cat:"Named Contact",
+    status:"contact", geo:"Florida", equity:"Free", ws:"WS4 · 09f",
+    role:"Maps the Third-Party Provider (TPP) network (e.g. Coho Designs) for additive/rapid prototyping; ISO/CMMC guidance later.",
+    next:"Intro call now to map the TPP network (Days 15–30). No spend.",
+    notes:"Substantive DFM engagement deferred to months 9–18 once a prototype exists." },
+
+  { name:"Stephen Reed", org:"Utah-MEP / USU Hub", cat:"Named Contact",
+    status:"contact", geo:"Utah", equity:"Free", ws:"WS4 · 09f",
+    role:"Subsidized rapid prototyping, SolidWorks concept work, factory tech packs — if pre-revenue clients qualify (open question).",
+    next:"One eligibility email/call (Days 15–30): does a pre-revenue product-development client qualify?",
+    notes:"If eligible, queue behind capstone output for rapid prototyping and tech packs." },
+
+  /* ── INSTITUTIONAL (free, relationship-based, no equity) ──────────── */
+  { name:"FGCU SBDC Advisor", org:"FL SBDC — anchor relationship", cat:"Institutional",
+    status:"signed", geo:"Florida", equity:"Free", ws:"WS5 · 09d",
+    role:"The anchor and cheapest door-opener. Already active; concept validated, SBA-loan-first path in motion. Routes Whitaker faculty, Lee County resilience staff, Data Axle sessions, and hire-sequencing advice.",
+    next:"Run the next session as a conversion meeting with the three 09d questions — goal: 2–3 warm intros. Next session within Days 1–14.",
+    notes:"Every Florida channel routes through this relationship. Already engaged — treat as on-board and keep the conversion cadence." },
+
+  { name:"Utah SBDC", org:"Salt Lake center, Sandy", cat:"Institutional",
+    status:"contact", geo:"Utah", equity:"Free", ws:"WS5",
+    role:"Utah-side mirror of the FGCU relationship: market validation for the H.B. 340 plug-in product path; UT design-partner identification.",
+    next:"Request an intake meeting (Days 1–14), batched with a Utah stay; frame around the UT plug-in product. Meeting within first 30 days.",
+    notes:"Parallel SBDC relationship to the FGCU anchor." },
+
+  { name:"FL FAST / SBIR Coach", org:"Florida High Tech Corridor", cat:"Institutional",
+    status:"contact", geo:"Florida", equity:"Free", ws:"WS5",
+    role:"NSF SBIR Phase I fit, proposal coaching, budget development; historic $150K Phase II state match.",
+    next:"Register for office hours (Days 15–30); sequence the SBIR go/no-go against the power-electronics advisor trial.",
+    notes:"SBIR can directly fund power-electronics + UL-compliance work — a credible technical lead strengthens the application (circular with the advisor recruit; run in parallel)." },
+
+  /* ── TECHNICAL ADVISORS (equity, FAST terms — role-based slots) ───── */
+  { name:"Power-Electronics / PIPV Advisor", org:"Core technical advisor — TO RECRUIT", cat:"Technical Advisor",
+    status:"contact", priority:true, geo:"Agnostic (FGCU-sourced likely)", equity:"0.50% Strategic ⚖", ws:"WS2 · 09d",
+    role:"The hardest, most important fill. Owns pak electrical architecture, grid-tie/anti-islanding logic, Path B state-agnostic design; anchors the NSF SBIR application's technical credibility.",
+    next:"Identify 2–3 candidates and begin the ~1-month / 8-hour working trial with the best. Sign on FAST terms by Day 90.",
+    notes:"Sourcing: FGCU Whitaker + UF/USF power-electronics groups via SBDC intro; Enphase/Hoymiles/APsystems field-application engineers; IEEE PES chapters; NABCEP pros; LinkedIn (Goal Zero, Jackery, Lifetime, Black Diamond alumni); Toptal/Kolabtree for scoped work. Up to 1.0% only if genuinely expert + door-opening. 2-yr monthly vesting, no/short cliff, present-tense IP assignment." },
+
+  { name:"UL 3700 / NRTL Pathway Advisor", org:"Certification specialist — BUY, DON'T HIRE", cat:"Technical Advisor",
+    status:"contact", geo:"Agnostic", equity:"Paid consult · 0.25% only if monthly ⚖", ws:"WS2 · 09d",
+    role:"Certification strategy: which NRTL to scope first (UL vs. Intertek vs. CSA), design-for-testability from day one, and the ~$70K Y2 UL 3700 line item in the pro-forma.",
+    next:"Start free pathway-scoping conversations / quotes in the first 90 days (the third 09d SBDC question). Paid engagement only post-Gate C.",
+    notes:"Bought expertise, not a hire. Sources: UL Solutions / Intertek pre-submittal consulting; licensed electrical PEs with PV listing experience (state PE boards, NCEES); CSA/TÜV quotes for comparison. Light 0.25% equity only if an individual PE stays engaged monthly. As of Apr 2026, zero plug-in kits held full UL 3700 system-level certification." },
+
+  { name:"Structural / Mechanical Advisor", org:"Host furniture & structures — QUEUED", cat:"Technical Advisor",
+    status:"contact", gated:true, geo:"Florida / Utah", equity:"0.25% Standard", ws:"WS2",
+    role:"Host-system integrity: T-slot mechanisms, IP65 enclosures, load/wind for tables, bar carts, deck boxes.",
+    next:"Engage once the capstone scope doc exists (~months 2–4). Not yet active.",
+    notes:"Phase-gated. Sources: licensed FL/UT structural PEs; FGCU & UF civil-structural faculty; USU OPDD faculty; Cad Crowd / engineering marketplaces. 0.25% Standard if recurring, otherwise scoped review honoraria post-funding." },
+
+  { name:"Industrial / Outdoor-Product Design Advisor", org:"OPDD design — QUEUED", cat:"Technical Advisor",
+    status:"contact", gated:true, geo:"Utah (OPDD)", equity:"0.25% Standard", ws:"WS2",
+    role:"Outdoor-durable materials, 'advanced-IKEA' install experience, consumer form factor; bridges capstone output to manufacturable design.",
+    next:"Surface via the Chase Anderson capstone conversation; formalize a FAST agreement post-capstone kickoff (months 3–6).",
+    notes:"Phase-gated behind the USU capstone. May prefer paid consulting if capstone slots fail — hold within the personal envelope. Sources: OPDD faculty (primary); Coroflot/Behance/Dribbble; Ringling/SCAD; Toptal design tier." },
+
+  /* ── DESIGN-PARTNER COHORT (no equity, LOI-governed; target 4–6 LOIs by Day 90) ── */
+  { name:"HOAs / Property Managers", org:"Design-partner segment", cat:"Design Partner",
+    status:"contact", geo:"Lee County + Bella Terra (FL); Herriman (UT)", equity:"No equity · LOI", ws:"WS3",
+    role:"Real-deployment sites, resident-demand evidence, procurement-style feedback — the strongest traction evidence for the Proof Round and SBA file.",
+    next:"SBDC Data Axle pull (30–50 targets within ~50mi of Estero); run discovery conversations (problem-first, no mechanism).",
+    notes:"Committee-derived warm HOA contacts. Target 4–6 non-binding Common Paper LOIs (binding confidentiality only) by Day 90." },
+
+  { name:"Patio / Outdoor Retailers", org:"Design-partner segment", cat:"Design Partner",
+    status:"contact", geo:"SWFL + Wasatch Front", equity:"No equity · LOI", ws:"WS3",
+    role:"Merchandising fit, price-point reaction, channel economics.",
+    next:"Data Axle NAICS filters + existing retail contacts → discovery conversations.",
+    notes:"Feeds willingness-to-pay data for the pro-forma's Good/Better/Best tiers." },
+
+  { name:"Hospitality / Outdoor Venues", org:"Design-partner segment", cat:"Design Partner",
+    status:"contact", geo:"SWFL boutique hotels", equity:"No equity · LOI", ws:"WS3",
+    role:"Commercial-duty feedback, visibility, resilience-use validation.",
+    next:"Source via Data Axle + a Cenfluence tailored partner search (Lisa Rain).",
+    notes:"Part of the 3–7 partner cohort; bi-weekly 30-min feedback cadence ~4 months once prototypes deploy." },
+
+  { name:"Lee County Resilience (Municipal)", org:"Public-sector — exploratory", cat:"Design Partner",
+    status:"contact", priority:true, geo:"Lee County, FL", equity:"No equity", ws:"WS7",
+    role:"Pilot/vendor positioning for shelters & resilience hubs — the underexplored Resilient-Florida-adjacent channel for procurement-style revenue and credibility.",
+    next:"Ask the FGCU SBDC advisor who owns resilience programming; take one exploratory meeting BEFORE the Sept 1 portal close.",
+    notes:"Time-boxed by the Sept 1, 2026 portal close. Listening mode: equipment gaps, procurement mechanics, pilot appetite. Counsel review before any municipal agreement ⚖." }
+];
+
+/* ── status metadata ── */
+const STATUS = {
+  contact: { label:"To Contact",        col:"contact" },
+  disc:    { label:"In Discussions",    col:"disc" },
+  signed:  { label:"Signed / On Board", col:"signed" },
+  passed:  { label:"Passed",            col:"passed" }
+};
+const COLS = ["contact","disc","signed","passed"];
+
+let view = "board", cat = "all", query = "";
+
+const esc = s => (s||"").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function visible(){
+  return ROSTER.filter(p=>{
+    if(cat!=="all" && p.cat!==cat) return false;
+    if(query){
+      const h = (p.name+" "+p.org+" "+p.role+" "+p.geo).toLowerCase();
+      if(!h.includes(query)) return false;
+    }
+    return true;
+  });
+}
+
+function chipHtml(p){
+  let c = `<span class="chip cat">${esc(p.cat)}</span>`;
+  if(p.priority) c += `<span class="chip pri">Priority</span>`;
+  if(p.gated) c += `<span class="chip gate">Gated</span>`;
+  if(p.equity && p.equity!=="—" && p.equity!=="Free" && p.equity!=="No equity" && p.equity!=="No equity · LOI")
+    c += `<span class="chip eq">${esc(p.equity)}</span>`;
+  else if(p.equity==="Free"||p.equity==="No equity"||p.equity==="No equity · LOI")
+    c += `<span class="chip">${esc(p.equity)}</span>`;
+  if(p.geo) c += `<span class="chip geo">${esc(p.geo)}</span>`;
+  return c;
+}
+
+function cardHtml(p, i){
+  return `<div class="card" data-i="${i}">
+    <div class="top"><div><div class="name">${esc(p.name)}</div><div class="org">${esc(p.org)}</div></div></div>
+    <div class="role">${esc(p.role)}</div>
+    <div class="chips">${chipHtml(p)}</div>
+    <div class="next"><span class="arrow">→</span><span><b>Next:</b> ${esc(p.next)}</span></div>
+  </div>`;
+}
+
+function renderStats(){
+  const V = visible();
+  const by = s => V.filter(p=>p.status===s).length;
+  const equityPct = ROSTER.filter(p=>p.status==="signed").reduce((a,p)=>{
+    const m = (p.equity||"").match(/([\d.]+)%/); return a + (m?parseFloat(m[1]):0);
+  },0);
+  const loiSigned = ROSTER.filter(p=>p.cat==="Design Partner" && p.status==="signed").length;
+  const cells = [
+    {n:by("contact"), k:"To Contact",       cls:"c-contact", f:"contact"},
+    {n:by("disc"),    k:"In Discussions",   cls:"c-disc",    f:"disc"},
+    {n:by("signed"),  k:"Signed / On Board",cls:"c-signed",  f:"signed"},
+    {n:by("passed"),  k:"Passed",           cls:"c-passed",  f:"passed"},
+    {n:equityPct.toFixed(2)+"%", k:"Equity committed", sub:"of ≤ 3% pool cap", cls:""},
+    {n:loiSigned+" / 4–6", k:"Design-partner LOIs", sub:"target by Day 90", cls:""}
+  ];
+  document.getElementById("stats").innerHTML = cells.map(c=>
+    `<div class="stat ${c.cls}"><div class="n">${c.n}</div><div class="k">${c.k}</div>${c.sub?`<div class="sub">${c.sub}</div>`:""}</div>`
+  ).join("");
+}
+
+function renderBoard(){
+  const V = visible();
+  const wrap = document.getElementById("wrap");
+  wrap.innerHTML = `<div class="board">`+ COLS.map(col=>{
+    const items = V.map((p,idx)=>({p,idx:ROSTER.indexOf(p)})).filter(x=>x.p.status===col);
+    const inner = items.length ? items.map(x=>cardHtml(x.p,x.idx)).join("")
+      : `<div class="empty">Nobody here yet</div>`;
+    return `<div class="col ${col}">
+      <div class="col-head"><div class="t"><span class="swatch"></span>${STATUS[col].label}</div><div class="cnt">${items.length}</div></div>
+      ${inner}
+    </div>`;
+  }).join("") + `</div>`;
+}
+
+function renderCategory(){
+  const V = visible();
+  const groups = [
+    {key:"Named Contact", title:"Named Contacts", desc:"Individuals to reach directly — the outreach list."},
+    {key:"Institutional", title:"Institutional Advisors", desc:"Free, relationship-based channels. No equity."},
+    {key:"Technical Advisor", title:"Technical Advisors", desc:"Equity on FAST terms; ~1-month working trial before signing. ≤3% pool."},
+    {key:"Design Partner", title:"Design-Partner Cohort", desc:"3–7 partners, LOI-governed, no equity. Target 4–6 LOIs by Day 90."}
+  ];
+  const wrap = document.getElementById("wrap");
+  wrap.innerHTML = groups.map(g=>{
+    const items = V.map(p=>({p,idx:ROSTER.indexOf(p)})).filter(x=>x.p.cat===g.key);
+    if(!items.length) return "";
+    const cards = items.map(x=>{
+      const st = STATUS[x.p.status];
+      return `<div class="card" data-i="${x.idx}">
+        <div class="top">
+          <div><div class="name">${esc(x.p.name)}</div><div class="org">${esc(x.p.org)}</div></div>
+          <span class="status-tag st-${st.col}">${st.label}</span>
+        </div>
+        <div class="role">${esc(x.p.role)}</div>
+        <div class="chips">${chipHtml(x.p)}</div>
+        <div class="next"><span class="arrow">→</span><span><b>Next:</b> ${esc(x.p.next)}</span></div>
+      </div>`;
+    }).join("");
+    return `<div class="group">
+      <div class="group-head"><h2>${g.title}</h2><span class="g-cnt">${items.length}</span><span class="g-desc">${g.desc}</span></div>
+      <div class="grid">${cards}</div>
+    </div>`;
+  }).join("");
+}
+
+function render(){
+  renderStats();
+  view==="board" ? renderBoard() : renderCategory();
+}
+
+/* modal */
+function openModal(i){
+  const p = ROSTER[i];
+  const st = STATUS[p.status];
+  const rows = [
+    ["Status", `<span class="status-tag st-${st.col}">${st.label}</span>`],
+    ["Category", esc(p.cat)],
+    ["Role / value", esc(p.role)],
+    ["Next step", esc(p.next)],
+    ["Compensation", esc(p.equity)],
+    ["Geography", esc(p.geo)],
+    ["Plan ref", esc(p.ws)],
+    ["Notes", esc(p.notes)]
+  ];
+  document.getElementById("mcontent").innerHTML =
+    `<div class="m-head"><div class="name">${esc(p.name)}</div><div class="org">${esc(p.org)}</div></div>
+     <div class="m-body">${rows.map(r=>`<div class="mrow"><div class="k">${r[0]}</div><div class="v">${r[1]}</div></div>`).join("")}</div>`;
+  document.getElementById("ov").classList.add("on");
+}
+function closeModal(){ document.getElementById("ov").classList.remove("on"); }
+
+/* events */
+document.getElementById("wrap").addEventListener("click", e=>{
+  const c = e.target.closest(".card"); if(c) openModal(+c.dataset.i);
+});
+document.getElementById("ov").addEventListener("click", e=>{ if(e.target.id==="ov") closeModal(); });
+document.getElementById("mx").addEventListener("click", closeModal);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeModal(); });
+
+document.getElementById("viewSeg").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  view = b.dataset.view;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
+  render();
+});
+document.getElementById("catSeg").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  cat = b.dataset.cat;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
+  render();
+});
+document.getElementById("q").addEventListener("input", e=>{ query = e.target.value.trim().toLowerCase(); render(); });
+document.getElementById("reset").addEventListener("click", ()=>{
+  view="board"; cat="all"; query="";
+  document.getElementById("q").value="";
+  document.querySelectorAll("#viewSeg button").forEach((b,i)=>b.classList.toggle("on",i===0));
+  document.querySelectorAll("#catSeg button").forEach((b,i)=>b.classList.toggle("on",i===0));
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
