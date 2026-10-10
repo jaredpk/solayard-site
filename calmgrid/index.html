@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CalmGrid</title>
+<meta name="description" content="CalmGrid is coming soon.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F4F7F6;
+    --ink: #1F2A2E;
+    --muted: #6B7A80;
+    --accent: #4F8A8B;
+    --line: #D5DEDD;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    text-align: center;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 14px);
+    gap: 6px;
+  }
+  .grid span {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    background: var(--line);
+  }
+  .grid span:nth-child(5) { background: var(--accent); }
+
+  h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    color: var(--muted);
+    font-size: 1.125rem;
+  }
+
+  footer {
+    position: fixed;
+    bottom: 1.25rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="grid" aria-hidden="true">
+    <span></span><span></span><span></span>
+    <span></span><span></span><span></span>
+    <span></span><span></span><span></span>
+  </div>
+  <h1>CalmGrid</h1>
+  <p>Something calm is on its way.</p>
+  <footer>&copy; 2026 CalmGrid</footer>
+</body>
+</html>
